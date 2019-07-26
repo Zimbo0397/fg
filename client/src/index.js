@@ -9,7 +9,7 @@ class App extends Component {
 
 		this.props = props;
 		this.state = {
-			users: []
+			games: []
 		}
 
 		this.animals = [1, 2, 3, 4, 5, 6];
@@ -18,16 +18,28 @@ class App extends Component {
 	componentWillMount() {
 		var socket = io.connect();
 
-		socket.on('login', (data) =>{
-			console.log(data);
+		socket.on('update', (data) =>{
+			this.setState({games: data});
 		});
 		
 	}
 
-	render() {
-		return this.state.users.map((user, index) => {
+	renderGames() {
+		return this.state.games.map((user, index) => {
 			return <PlayerDash animals={this.animals} />;
 		});
+	}
+
+	greateGame() {
+		socket.emit('new Game');
+		console.log('new Game');
+	}
+
+	render() {
+		return <div>
+			<button onclick={this.greateGame}>add Game</button>
+			{this.renderGames()}
+		</div>
 	}
 }
 

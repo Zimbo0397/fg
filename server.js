@@ -105,16 +105,18 @@ var users = [],
 			}
 	}
 
-io.sockets.on('connection', function(socket) {
+io.on('connection', function(socket) {
 	connections.push(socket);
-
-	socket.on('new Game', (data) => {
+	console.log('connection');
+	socket.on('newGame', (data) => {
+		console.log('connection');
 		const game = new Game({id: socket.id});
 		games.push(game);
-		socket.emit('update', games);
+		io.emit('update', games);
 	});
 
 	socket.on('disconnect', function(data) {
+		console.log('disconnect');
 		connections.splice(connections.indexOf(socket), 1);
 		const game = games.find(gm => gm.id === socket.id);
 		games.splice(games.indexOf(game), 1);

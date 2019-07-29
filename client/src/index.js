@@ -31,8 +31,8 @@ class App extends Component {
 	}
 
 	greateGame() {
-		socket.emit('new Game');
-		console.log('new Game');
+		socket.emit('newGame');
+		console.log('newGame');
 	}
 
 	render() {

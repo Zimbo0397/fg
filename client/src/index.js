@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import  PlayerDash from "./components/player";
+import  gameListItem from "./components/games-list-item";
+
+let socket = null;
 
 class App extends Component {
 
@@ -9,36 +12,49 @@ class App extends Component {
 
 		this.props = props;
 		this.state = {
-			games: []
+			games: [],
+			id: null
 		}
 
 		this.animals = [1, 2, 3, 4, 5, 6];
+
+		this.greateGame = this.greateGame.bind(this);
+		this.connectUserToGame = this.connectUserToGame.bind(this);
+		this.renderGamesList = this.renderGamesList.bind(this);
 	}
 
 	componentWillMount() {
-		var socket = io.connect();
+		socket = io.connect();
 
-		socket.on('update', (data) =>{
+
+		socket.on('userCreated', (userId) => {
+			this.setState({id: userId});
+		});
+
+		socket.on('update', (data) => {
+			console.log(data);
 			this.setState({games: data});
 		});
 		
 	}
 
-	renderGames() {
-		return this.state.games.map((user, index) => {
-			return <PlayerDash animals={this.animals} />;
-		});
+	renderGamesList() {
+		return this.state.games.map((game) => {return gameListItem({...game}, () => {this.connectUserToGame(game.id)})});
 	}
 
 	greateGame() {
 		socket.emit('newGame');
-		console.log('newGame');
+	}
+
+	connectUserToGame(id) {
+		socket.emit('connectToGame', id);
 	}
 
 	render() {
 		return <div>
-			<button onclick={this.greateGame}>add Game</button>
-			{this.renderGames()}
+			<h1>{this.state.id}</h1>
+			<button onClick={this.greateGame}>add Game</button>
+			{this.renderGamesList()}
 		</div>
 	}
 }

@@ -18,7 +18,8 @@ app.get('/', function(request, response) {
 
 app.get('/scripts', function(request, response) {
 	response.sendFile(path.join(__dirname, '.././client/dist/bundle.js'));
-  });
+});
+
 
 // Starts the server.
 server.listen(5000, function() {
@@ -30,6 +31,7 @@ let players = [],
 	connections = {};
 
 io.on('connection', function(socket) {
+	console.log('connect', socket.id);
 	const id = socket.id;
 	if (games.length) {
 		socket.emit('update', games);
@@ -40,14 +42,13 @@ io.on('connection', function(socket) {
 	socket.emit('userCreated', id);
 
 	socket.on('disconnect', async function(data) {
-		// removeGameById(id);
-		// removePlayerById(id);
-		// await socket.emit('update', games);
+		console.log('disconnect', socket.id);
+		removeGameById(id);
+		removePlayerById(id);
+		await io.emit('update', games);
 		// console.log('disconnect');
 	});
-});
 
-io.on('connection', function(socket) {
 	socket.on('newGame', function(data) {
 		const id = socket.id;
 		
@@ -56,21 +57,30 @@ io.on('connection', function(socket) {
 		createGame(id);
 		io.emit('update', games);
 	});
-});
 
-io.on('connection', function(socket) {
 	socket.on('connectToGame', function(gmId) {
 		const plId = socket.id;
-
+	
 		connectPlToGame(plId, gmId);
-
+	
 		io.emit('update', games);
 	});
+
+	socket.on('setName', function(name) {
+		const player = getPlayerById(socket.id);
+	
+		player.name = name;
+	
+		io.emit('update', games);
+	});
+
+	
 });
+
 
 function createGame(id) {
 	const game = new Game(id),
-		  player = players.find(pl => pl.id);
+		  player = getPlayerById(id);
 
 		game.addPlayer(player);
 		games.push(game);

@@ -13,6 +13,7 @@ const Game = function(id, options) {
     };
 
     this.id = id;
+    this.is
 
     if (options) {
             this.options = Object.assign({}, this.options, options);

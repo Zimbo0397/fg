@@ -39,10 +39,11 @@ io.on('connection', function(socket) {
 
 	socket.emit('userCreated', id);
 
-	socket.on('disconnect', function(data) {
-		removeGameById(id);
-		removePlayerById(id);
-		socket.emit('update', games);
+	socket.on('disconnect', async function(data) {
+		// removeGameById(id);
+		// removePlayerById(id);
+		// await socket.emit('update', games);
+		// console.log('disconnect');
 	});
 });
 
@@ -53,6 +54,7 @@ io.on('connection', function(socket) {
 		if (hasGame(id)) {return;}
 		
 		createGame(id);
+		io.emit('update', games);
 	});
 });
 
@@ -72,7 +74,6 @@ function createGame(id) {
 
 		game.addPlayer(player);
 		games.push(game);
-		io.emit('update', games);
 }
 
 function removeGameById(id) {
@@ -83,7 +84,6 @@ function removeGameById(id) {
 		if (gameIndex < 0) {return;}
 
 		games.splice(games.indexOf(game), 1);
-		io.emit('update', games);
 
 		for (var con in connections) {
 			if (connections[con] === id) {

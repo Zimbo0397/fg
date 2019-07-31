@@ -77,7 +77,6 @@ io.on('connection', function(socket) {
 	
 });
 
-
 function createGame(id) {
 	const game = new Game(id),
 		  player = getPlayerById(id);

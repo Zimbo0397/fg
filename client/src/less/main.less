@@ -1,5 +1,12 @@
 @import "variables";
+@import "mixins";
 
 body {
-    background: @green;
+    // background: @green;
+}
+
+.animal-list {
+    .on-circle(@item-count: 7, @circle-size: 20em, @item-size: 4em);
+        margin: 5em auto 0;
+        border: solid 1px tomato;
 }
